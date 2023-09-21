@@ -11,7 +11,7 @@ jobs:
       matrix:
         include:
           - win_ver: x86版
-            msvc_arch: x86
+            msvc_arch: x64_x86
             libsodium_arch: Win32
             
           - win_ver: x64版
