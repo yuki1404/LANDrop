@@ -3,45 +3,8 @@ name: Package
 on: [push, pull_request]
 
 jobs:
-  package_linux:
-    name: Linux Package
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v2
-
-      - name: Install libqxcb dependencies
-        run: sudo apt install libfontconfig1-dev libfreetype6-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxcb1-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync0-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libxcb-xinerama0-dev libxkbcommon-dev libxkbcommon-x11-dev
-
-      - name: Install libsodium
-        run: sudo apt install libsodium-dev
-
-      - name: Install linuxdeploy
-        run: |
-          wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
-          wget https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage
-          chmod +x linuxdeploy-*.AppImage
-
-      - name: Build
-        working-directory: ./LANDrop
-        run: qmake && make -j$(nproc)
-
-      - name: Package
-        run: |
-          ./linuxdeploy-x86_64.AppImage --appdir AppDir -e LANDrop/LANDrop -d misc/LANDrop.desktop -i LANDrop/icons/app.svg --icon-filename LANDrop -p qt -o appimage
-          mv LANDrop*.AppImage LANDrop-linux.AppImage
-
-      - name: Upload
-        uses: actions/upload-artifact@v2
-        with:
-          name: Linux-Build
-          path: LANDrop-linux.AppImage
-
   package_windows:
-    name: Windows Package
+    name: 编译Win x64
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -84,39 +47,10 @@ jobs:
 
       - name: Zip
         working-directory: ./LANDrop
-        run: Compress-Archive LANDrop LANDrop-win.zip
+        run: Compress-Archive LANDrop LANDrop-winx64.zip
 
       - name: Upload
         uses: actions/upload-artifact@v2
         with:
           name: Windows-Build
-          path: LANDrop/LANDrop-win.zip
-
-  package_macos:
-    name: macOS Package
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v2
-
-      - name: Install libsodium
-        run: brew install libsodium
-
-      - name: Build
-        working-directory: ./LANDrop
-        run: qmake && make -j$(nproc)
-
-      - name: Package
-        working-directory: ./LANDrop
-        run: |
-          macdeployqt LANDrop.app
-          zip -r9 --symlinks LANDrop-macos.zip LANDrop.app
-
-      - name: Upload
-        uses: actions/upload-artifact@v2
-        with:
-          name: macOS-Build
-          path: LANDrop/LANDrop-macos.zip
+          path: LANDrop/LANDrop-winx64.zip
