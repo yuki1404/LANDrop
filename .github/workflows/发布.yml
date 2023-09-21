@@ -35,7 +35,7 @@ jobs:
         working-directory: ./LANDrop
         run: |
           echo "INCLUDEPATH += ../libsodium/include" >> LANDrop.pro
-          echo "LIBS += -L../libsodium/${{ matrix.libsodium_arch }}/Release/v142/dynamic -llibsodium" >> LANDrop.pro
+          echo "LIBS += -L../libsodium/${{ matrix.libsodium_arch }}/Release/v142/dynamic -llisodium" >> LANDrop.pro
 
       - name: Build
         shell: cmd
