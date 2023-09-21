@@ -4,17 +4,17 @@ on: workflow_dispatch
 
 jobs:
   package_windows:
-    name: 编译Win x64
+    name: 编译Win平台
     runs-on: windows-2019
 
     strategy:
       matrix:
         include:
-          - win_ver: x86
+          - win_ver: x86版
             msvc_arch: x86
             libsodium_arch: Win32
             
-          - win_ver: x64
+          - win_ver: x64版
             msvc_arch: x64
             libsodium_arch: x64
     steps:
