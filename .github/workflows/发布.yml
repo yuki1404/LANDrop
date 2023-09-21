@@ -43,6 +43,13 @@ jobs:
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.msvc_arch }}
           qmake -tp vc
+          echo.
+          echo ==========================
+          echo.
+          type LANDrop.vcxproj
+          echo.
+          echo ==========================
+          echo.
           msbuild -m -p:Configuration=Release .
 
       - name: Package
