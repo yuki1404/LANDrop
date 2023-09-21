@@ -5,7 +5,18 @@ on: workflow_dispatch
 jobs:
   package_windows:
     name: 编译Win x64
-    runs-on: windows-latest
+    runs-on: windows-2019
+
+    strategy:
+      matrix:
+        include:
+          - win_ver: x86
+            msvc_arch: x86
+            libsodium_arch: Win32
+            
+          - win_ver: x64
+            msvc_arch: x64
+            libsodium_arch: x64
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -24,13 +35,13 @@ jobs:
         working-directory: ./LANDrop
         run: |
           echo "INCLUDEPATH += ../libsodium/include" >> LANDrop.pro
-          echo "LIBS += -L../libsodium/x64/Release/v142/dynamic -llibsodium" >> LANDrop.pro
+          echo "LIBS += -L../libsodium/${{ matrix.libsodium_arch }}/Release/v142/dynamic -llibsodium" >> LANDrop.pro
 
       - name: Build
         shell: cmd
         working-directory: ./LANDrop
         run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.msvc_arch }}
           qmake -tp vc
           msbuild -m -p:Configuration=Release .
 
@@ -42,15 +53,15 @@ jobs:
           cd LANDrop
           mv ../release/LANDrop.exe .
           windeployqt LANDrop.exe
-          cp ../../libsodium/x64/Release/v142/dynamic/libsodium.dll .
-          curl -LO https://aka.ms/vs/16/release/vc_redist.x64.exe
+          cp ../../libsodium/${{ matrix.libsodium_arch }}/Release/v142/dynamic/libsodium.dll .
+          # curl -LO https://aka.ms/vs/16/release/vc_redist.x64.exe
 
       - name: Zip
         working-directory: ./LANDrop
-        run: Compress-Archive LANDrop LANDrop-winx64.zip
+        run: Compress-Archive LANDrop LANDrop-win-${{ matrix.msvc_arch }}.zip
 
       - name: Upload
         uses: actions/upload-artifact@v2
         with:
           name: Windows-Build
-          path: LANDrop/LANDrop-winx64.zip
+          path: LANDrop/LANDrop-win-${{ matrix.msvc_arch }}.zip
